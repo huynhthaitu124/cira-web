@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase';
 
 export async function GET() {
     try {
+        // Check if Supabase is configured
+        if (!isSupabaseConfigured()) {
+            return NextResponse.json({
+                success: false,
+                error: 'Supabase is not configured. Please set environment variables.'
+            }, { status: 503 });
+        }
+
         console.log('Testing Supabase connection...');
         console.log('URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
         console.log('Service Role Key exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);

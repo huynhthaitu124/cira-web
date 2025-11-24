@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, supabaseAdmin } from '@/lib/supabase';
+import { supabase, supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
     try {
+        // Check if Supabase is configured
+        if (!isSupabaseConfigured()) {
+            return NextResponse.json(
+                { error: 'Database is not configured. Please contact support.' },
+                { status: 503 }
+            );
+        }
+
         const body = await request.json();
         const { email, language = 'vi' } = body;
 
@@ -144,6 +152,14 @@ async function sendWelcomeEmail(email: string, language: 'vi' | 'en') {
 // GET endpoint to retrieve waitlist stats (optional, for admin)
 export async function GET(request: NextRequest) {
     try {
+        // Check if Supabase is configured
+        if (!isSupabaseConfigured()) {
+            return NextResponse.json(
+                { error: 'Database is not configured. Please contact support.' },
+                { status: 503 }
+            );
+        }
+
         const { data, error } = await supabaseAdmin
             .from('waitlist_stats')
             .select('*')
