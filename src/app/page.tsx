@@ -84,7 +84,6 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <span className="text-2xl"></span>
               <span className="text-xl font-semibold tracking-tight">CIRA</span>
             </div>
             <div className="flex items-center gap-3">
