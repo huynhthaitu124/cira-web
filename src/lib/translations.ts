@@ -131,7 +131,7 @@ export const translations = {
                 line1: "Đừng Bỏ Lỡ Cơ Hội",
                 line2: "Trở Thành Người Đầu Tiên"
             },
-            description: "Tham gia waitlist ngay hôm nay để nhận ưu đãi giảm <strong>10% trọn đời</strong> cho gói đăng ký đầu tiên, cùng quyền truy cập ưu tiên khi CIRA chính thức ra mắt.",
+            description: "Tham gia waitlist ngay hôm nay để nhận ưu đãi giảm <strong>10%</strong> cho gói đăng ký đầu tiên, cùng quyền truy cập ưu tiên khi CIRA chính thức ra mắt.",
             emailPlaceholder: "email@example.com",
             button: "Đăng Ký Ngay →",
             privacyNote: "🔒 Thông tin của bạn được bảo mật tuyệt đối",
