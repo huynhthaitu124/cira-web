@@ -22,6 +22,29 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Check if email already exists in waitlist
+        const normalizedEmail = email.toLowerCase().trim();
+        const { data: existingEntry, error: checkError } = await supabaseAdmin
+            .from('waitlist')
+            .select('id, email')
+            .eq('email', normalizedEmail)
+            .maybeSingle();
+
+        if (checkError) {
+            console.error('❌ Error checking existing email:', checkError);
+            // Continue anyway, the insert will catch duplicates via constraint
+        }
+
+        if (existingEntry) {
+            return NextResponse.json(
+                {
+                    error: 'Email này đã có trong danh sách chờ / This email is already on the waitlist',
+                    code: 'DUPLICATE_EMAIL'
+                },
+                { status: 409 }
+            );
+        }
+
         // Insert into waitlist using admin client to bypass RLS
         const { data, error } = await supabaseAdmin
             .from('waitlist')
