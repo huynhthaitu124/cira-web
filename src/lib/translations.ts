@@ -168,7 +168,7 @@ export const translations = {
                 title: "Hỗ Trợ",
                 help: "Trợ Giúp",
                 community: "Cộng Đồng",
-                email: "hello@cira.vn"
+                email: "cira.app.sp@gmail.com"
             },
             copyright: "© 2025 CIRA. Được thiết kế với ❤️ tại Việt Nam."
         }
@@ -342,7 +342,7 @@ export const translations = {
                 title: "Support",
                 help: "Help Center",
                 community: "Community",
-                email: "hello@cira.vn"
+                email: "cira.app.sp@gmail.com"
             },
             copyright: "© 2025 CIRA. Designed with ❤️ in Vietnam."
         }
