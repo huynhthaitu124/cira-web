@@ -18,7 +18,19 @@ export const translations = {
             formNote: "✓ Miễn phí • ✓ Không spam • ✓ Hủy bất kỳ lúc nào",
             successMessage: "🎉 Cảm ơn bạn! Chúng tôi đã gửi mã giảm giá đến email của bạn.",
             trustBadge: "Được thử nghiệm với 200+ gia đình Việt",
-            imageAlt: "Người cao tuổi đang sử dụng CIRA"
+            imageAlt: "Người cao tuổi đang sử dụng CIRA",
+            dialog: {
+                title: "Hoàn Tất Đăng Ký",
+                description: "Vui lòng cung cấp thêm thông tin để nhận ưu đãi",
+                firstNameLabel: "Họ",
+                firstNamePlaceholder: "Nguyễn Văn",
+                lastNameLabel: "Tên",
+                lastNamePlaceholder: "A",
+                ageLabel: "Tuổi",
+                agePlaceholder: "25",
+                submitButton: "Hoàn Tất",
+                cancelButton: "Hủy"
+            }
         },
         trust: {
             stat1: "Người Quan Tâm",
@@ -180,7 +192,19 @@ export const translations = {
             formNote: "✓ Free to join • ✓ No spam • ✓ Unsubscribe anytime",
             successMessage: "🎉 Thank you! We've sent the discount code to your email.",
             trustBadge: "Tested with 200+ Vietnamese families",
-            imageAlt: "Senior using CIRA app"
+            imageAlt: "Senior using CIRA app",
+            dialog: {
+                title: "Complete Registration",
+                description: "Please provide additional information to receive your discount",
+                firstNameLabel: "First Name",
+                firstNamePlaceholder: "John",
+                lastNameLabel: "Last Name",
+                lastNamePlaceholder: "Doe",
+                ageLabel: "Age",
+                agePlaceholder: "25",
+                submitButton: "Complete",
+                cancelButton: "Cancel"
+            }
         },
         trust: {
             stat1: "Interested Users",

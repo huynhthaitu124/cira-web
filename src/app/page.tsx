@@ -5,6 +5,13 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 import { translations } from "@/lib/translations";
 
 type Language = "vi" | "en";
@@ -12,16 +19,31 @@ type Language = "vi" | "en";
 
 export default function Home() {
   const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [age, setAge] = useState("");
+  const [showDialog, setShowDialog] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [language, setLanguage] = useState<Language>("vi");
 
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email || isSubmitting) return;
+
+    // Show dialog to collect user details
+    setShowDialog(true);
+  };
+
+  const handleDialogSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!firstName || !lastName || !age || isSubmitting) return;
 
     setIsSubmitting(true);
     setShowError(false);
@@ -35,6 +57,9 @@ export default function Home() {
         },
         body: JSON.stringify({
           email: email.trim(),
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          age: parseInt(age),
           language,
         }),
       });
@@ -52,11 +77,16 @@ export default function Home() {
             : 'An error occurred. Please try again!'));
         }
         setShowError(true);
+        setShowDialog(false);
         return;
       }
 
       setShowSuccess(true);
       setEmail("");
+      setFirstName("");
+      setLastName("");
+      setAge("");
+      setShowDialog(false);
       setTimeout(() => setShowSuccess(false), 8000);
 
     } catch (error) {
@@ -65,11 +95,13 @@ export default function Home() {
         ? 'Không thể kết nối. Vui lòng kiểm tra internet!'
         : 'Connection failed. Please check your internet!');
       setShowError(true);
+      setShowDialog(false);
     } finally {
       setIsSubmitting(false);
       setTimeout(() => setShowError(false), 6000);
     }
   };
+
 
   const toggleLanguage = () => {
     setLanguage(language === "vi" ? "en" : "vi");
@@ -176,6 +208,77 @@ export default function Home() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* User Information Dialog */}
+              <Dialog open={showDialog} onOpenChange={setShowDialog}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{t.hero.dialog.title}</DialogTitle>
+                    <DialogDescription>
+                      {t.hero.dialog.description}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleDialogSubmit} className="space-y-4">
+                    {/* First Name and Last Name in same row */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                          {t.hero.dialog.firstNameLabel}
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder={t.hero.dialog.firstNamePlaceholder}
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          required
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">
+                          {t.hero.dialog.lastNameLabel}
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder={t.hero.dialog.lastNamePlaceholder}
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          required
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        {t.hero.dialog.ageLabel}
+                      </label>
+                      <Input
+                        type="number"
+                        placeholder={t.hero.dialog.agePlaceholder}
+                        value={age}
+                        onChange={(e) => setAge(e.target.value)}
+                        required
+                        min="1"
+                        max="150"
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                    <div className="flex gap-2 justify-end pt-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowDialog(false)}
+                        disabled={isSubmitting}
+                      >
+                        {t.hero.dialog.cancelButton}
+                      </Button>
+                      <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? (language === 'vi' ? 'Đang gửi...' : 'Sending...') : t.hero.dialog.submitButton}
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
 
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

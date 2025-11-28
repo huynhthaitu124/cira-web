@@ -12,12 +12,28 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const { email, language = 'vi' } = body;
+        const { email, first_name, last_name, age, language = 'vi' } = body;
 
         // Validate email
         if (!email || !email.includes('@')) {
             return NextResponse.json(
                 { error: 'Invalid email address' },
+                { status: 400 }
+            );
+        }
+
+        // Validate required fields
+        if (!first_name || !last_name || !age) {
+            return NextResponse.json(
+                { error: 'First name, last name, and age are required' },
+                { status: 400 }
+            );
+        }
+
+        // Validate age
+        if (typeof age !== 'number' || age < 1 || age > 150) {
+            return NextResponse.json(
+                { error: 'Invalid age' },
                 { status: 400 }
             );
         }
@@ -51,6 +67,9 @@ export async function POST(request: NextRequest) {
             .insert([
                 {
                     email: email.toLowerCase().trim(),
+                    first_name: first_name.trim(),
+                    last_name: last_name.trim(),
+                    age,
                     language,
                     metadata: {
                         user_agent: request.headers.get('user-agent'),
@@ -137,9 +156,9 @@ async function sendWelcomeEmail(email: string, language: 'vi' | 'en') {
     const subject = language === 'vi' ? template.subject_vi : template.subject_en;
     const body = language === 'vi' ? template.body_vi : template.body_en;
 
-    // Check if Resend is configured
-    if (!process.env.RESEND_API_KEY) {
-        console.log('⚠️  RESEND_API_KEY not configured - email will not be sent');
+    // Check if SMTP is configured
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
+        console.log('⚠️  SMTP not configured - email will not be sent');
         console.log('📧 Would send email to:', email);
         console.log('📝 Subject:', subject);
         console.log('🌐 Language:', language);
@@ -147,24 +166,30 @@ async function sendWelcomeEmail(email: string, language: 'vi' | 'en') {
     }
 
     try {
-        // Use Resend SDK
-        const { Resend } = require('resend');
-        const resend = new Resend(process.env.RESEND_API_KEY);
+        // Use Nodemailer with SMTP
+        const nodemailer = require('nodemailer');
 
-        const { data, error } = await resend.emails.send({
-            from: process.env.EMAIL_FROM || 'CIRA <onboarding@resend.dev>',
-            to: [email],
-            subject,
+        // Create transporter
+        const transporter = nodemailer.createTransport({
+            host: process.env.SMTP_HOST,
+            port: parseInt(process.env.SMTP_PORT || '587'),
+            secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+            auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS,
+            },
+        });
+
+        // Send email
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL_FROM || `"CIRA" <${process.env.SMTP_USER}>`,
+            to: email,
+            subject: subject,
             html: body,
         });
 
-        if (error) {
-            console.error('❌ Resend error:', error);
-            throw error;
-        }
-
-        console.log('✅ Email sent successfully via Resend:', data);
-        return data;
+        console.log('✅ Email sent successfully:', info.messageId);
+        return info;
 
     } catch (error) {
         console.error('❌ Failed to send email:', error);

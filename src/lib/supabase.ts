@@ -32,6 +32,9 @@ export const supabaseAdmin = createClient(
 export interface WaitlistEntry {
     id: string;
     email: string;
+    first_name: string;
+    last_name: string;
+    age: number;
     language: 'vi' | 'en';
     created_at: string;
     email_sent: boolean;
