@@ -43,7 +43,7 @@ export default function Home() {
   const handleDialogSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!firstName || !lastName || !age || isSubmitting) return;
+    if (!email || !firstName || !lastName || !age || isSubmitting) return;
 
     setIsSubmitting(true);
     setShowError(false);
@@ -127,7 +127,11 @@ export default function Home() {
               >
                 {language === "vi" ? "🇻🇳" : "🇺🇸"} {language === "vi" ? "EN" : "VI"}
               </Button>
-              <Button size="sm" className="rounded-full">
+              <Button
+                size="sm"
+                className="rounded-full"
+                onClick={() => setShowDialog(true)}
+              >
                 {t.nav.cta}
               </Button>
             </div>
@@ -219,6 +223,21 @@ export default function Home() {
                     </DialogDescription>
                   </DialogHeader>
                   <form onSubmit={handleDialogSubmit} className="space-y-4">
+                    {/* Email field */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium">
+                        Email
+                      </label>
+                      <Input
+                        type="email"
+                        placeholder={t.hero.emailPlaceholder}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        disabled={isSubmitting}
+                      />
+                    </div>
+
                     {/* First Name and Last Name in same row */}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
