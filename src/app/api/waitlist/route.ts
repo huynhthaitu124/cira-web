@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase, supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase';
+import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
     try {
@@ -167,7 +167,7 @@ async function sendWelcomeEmail(email: string, language: 'vi' | 'en') {
 
     try {
         // Use Nodemailer with SMTP
-        const nodemailer = require('nodemailer');
+        const nodemailer = (await import('nodemailer')).default;
 
         // Create transporter
         const transporter = nodemailer.createTransport({
@@ -198,7 +198,7 @@ async function sendWelcomeEmail(email: string, language: 'vi' | 'en') {
 }
 
 // GET endpoint to retrieve waitlist stats (optional, for admin)
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         // Check if Supabase is configured
         if (!isSupabaseConfigured()) {

@@ -39,7 +39,7 @@ export interface WaitlistEntry {
     created_at: string;
     email_sent: boolean;
     email_sent_at: string | null;
-    metadata: Record<string, any>;
+    metadata: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export interface EmailTemplate {

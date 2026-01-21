@@ -1,43 +1,44 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 // Test script to verify Resend email configuration
 // Run: node scripts/test-email.js your-email@example.com
 
 require('dotenv').config({ path: '.env.local' });
 
 async function testEmail(recipientEmail) {
-    console.log('🚀 Testing Resend Email Configuration...\n');
+  console.log('🚀 Testing Resend Email Configuration...\n');
 
-    // Check environment variables
-    console.log('📋 Checking environment variables:');
+  // Check environment variables
+  console.log('📋 Checking environment variables:');
 
-    if (!process.env.RESEND_API_KEY) {
-        console.error('❌ RESEND_API_KEY is not set in .env.local');
-        console.log('\n💡 Add this to your .env.local file:');
-        console.log('   RESEND_API_KEY=re_your_api_key_here\n');
-        process.exit(1);
-    }
-    console.log('✅ RESEND_API_KEY is set');
+  if (!process.env.RESEND_API_KEY) {
+    console.error('❌ RESEND_API_KEY is not set in .env.local');
+    console.log('\n💡 Add this to your .env.local file:');
+    console.log('   RESEND_API_KEY=re_your_api_key_here\n');
+    process.exit(1);
+  }
+  console.log('✅ RESEND_API_KEY is set');
 
-    const emailFrom = process.env.EMAIL_FROM || 'CIRA <onboarding@resend.dev>';
-    console.log(`✅ EMAIL_FROM: ${emailFrom}\n`);
+  const emailFrom = process.env.EMAIL_FROM || 'CIRA <onboarding@resend.dev>';
+  console.log(`✅ EMAIL_FROM: ${emailFrom}\n`);
 
-    if (!recipientEmail) {
-        console.error('❌ Please provide a recipient email');
-        console.log('\n💡 Usage:');
-        console.log('   node scripts/test-email.js your-email@example.com\n');
-        process.exit(1);
-    }
+  if (!recipientEmail) {
+    console.error('❌ Please provide a recipient email');
+    console.log('\n💡 Usage:');
+    console.log('   node scripts/test-email.js your-email@example.com\n');
+    process.exit(1);
+  }
 
-    try {
-        const { Resend } = require('resend');
-        const resend = new Resend(process.env.RESEND_API_KEY);
+  try {
+    const { Resend } = require('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
-        console.log(`📧 Sending test email to: ${recipientEmail}...`);
+    console.log(`📧 Sending test email to: ${recipientEmail}...`);
 
-        const { data, error } = await resend.emails.send({
-            from: emailFrom,
-            to: [recipientEmail],
-            subject: '🎉 CIRA Test Email - Nó hoạt động rồi!',
-            html: `
+    const { data, error } = await resend.emails.send({
+      from: emailFrom,
+      to: [recipientEmail],
+      subject: '🎉 CIRA Test Email - Nó hoạt động rồi!',
+      html: `
         <!DOCTYPE html>
         <html>
         <head>
@@ -83,32 +84,32 @@ async function testEmail(recipientEmail) {
         </body>
         </html>
       `,
-        });
+    });
 
-        if (error) {
-            console.error('\n❌ Failed to send email:');
-            console.error(error);
-            process.exit(1);
-        }
-
-        console.log('\n✅ Email sent successfully!');
-        console.log('📨 Email ID:', data.id);
-        console.log('\n📬 Please check your inbox (and spam folder) at:', recipientEmail);
-        console.log('\n🎉 Your email configuration is working! You can now use the waitlist form.\n');
-
-    } catch (error) {
-        console.error('\n❌ Error occurred:');
-        console.error(error.message);
-
-        if (error.message.includes('API key')) {
-            console.log('\n💡 Tips:');
-            console.log('   1. Make sure RESEND_API_KEY in .env.local is correct');
-            console.log('   2. API key should start with "re_"');
-            console.log('   3. Get your API key from: https://resend.com/api-keys\n');
-        }
-
-        process.exit(1);
+    if (error) {
+      console.error('\n❌ Failed to send email:');
+      console.error(error);
+      process.exit(1);
     }
+
+    console.log('\n✅ Email sent successfully!');
+    console.log('📨 Email ID:', data.id);
+    console.log('\n📬 Please check your inbox (and spam folder) at:', recipientEmail);
+    console.log('\n🎉 Your email configuration is working! You can now use the waitlist form.\n');
+
+  } catch (error) {
+    console.error('\n❌ Error occurred:');
+    console.error(error.message);
+
+    if (error.message.includes('API key')) {
+      console.log('\n💡 Tips:');
+      console.log('   1. Make sure RESEND_API_KEY in .env.local is correct');
+      console.log('   2. API key should start with "re_"');
+      console.log('   3. Get your API key from: https://resend.com/api-keys\n');
+    }
+
+    process.exit(1);
+  }
 }
 
 // Get email from command line arguments

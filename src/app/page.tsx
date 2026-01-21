@@ -462,7 +462,7 @@ export default function Home() {
             <div className="space-y-6">
               <Card className="border-2">
                 <CardContent className="p-8">
-                  <div className="text-6xl text-muted-foreground/20 font-serif mb-4">"</div>
+                  <div className="text-6xl text-muted-foreground/20 font-serif mb-4">&quot;</div>
                   <p className="text-lg leading-relaxed mb-6">
                     {t.social.testimonial.quote}
                   </p>
