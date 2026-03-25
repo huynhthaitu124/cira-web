@@ -42,7 +42,7 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">6. Contact Us</h2>
-            <p>If you have any questions or concerns about this privacy policy, please contact us at: <strong className="text-zinc-900 dark:text-zinc-100">support@cira.app</strong></p>
+            <p>If you have any questions or concerns about this privacy policy, please contact us at: <strong className="text-zinc-900 dark:text-zinc-100">cira.app.sp@gmail.com</strong></p>
           </section>
 
           <p className="text-sm text-zinc-500 dark:text-zinc-500 mt-12 pt-8 border-t border-zinc-200 dark:border-zinc-800">

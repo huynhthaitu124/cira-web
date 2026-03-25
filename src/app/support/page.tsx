@@ -13,8 +13,8 @@ export default function Support() {
         <div className="space-y-6">
           <div>
             <p className="text-zinc-500 dark:text-zinc-400 text-sm uppercase tracking-wider font-semibold mb-1">Email</p>
-            <a href="mailto:support@cira.app" className="text-blue-600 dark:text-blue-400 font-medium text-lg hover:underline transition-colors">
-              support@cira.app
+            <a href="mailto:cira.app.sp@gmail.com" className="text-blue-600 dark:text-blue-400 font-medium text-lg hover:underline transition-colors">
+              cira.app.sp@gmail.com
             </a>
           </div>
           <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800">
