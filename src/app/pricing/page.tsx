@@ -201,8 +201,8 @@ export default function PricingPage() {
             const priceText = price === 0 ? (language === "vi" ? "Miễn phí" : "Free") : formatPrice(price);
             
             // Hero inversion for the popular plan
-            const bgClass = plan.isPopular ? "bg-primary text-primary-foreground border-transparent" : "bg-card text-card-foreground border-border";
-            const focusClass = isSelected ? "ring-2 ring-foreground ring-offset-4 ring-offset-background" : "hover:border-foreground/30";
+            const bgClass = plan.isPopular ? "bg-zinc-950 text-white border-zinc-900" : "bg-card text-card-foreground border-border";
+            const focusClass = isSelected ? "ring-2 ring-zinc-950 ring-offset-4 ring-offset-background" : "hover:border-foreground/30";
             
             return (
               <Card 
@@ -212,7 +212,7 @@ export default function PricingPage() {
               >
                 {plan.isPopular && (
                   <div className="absolute -top-4 left-0 right-0 flex justify-center">
-                    <span className="bg-background text-foreground border-2 border-primary px-4 py-1 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg">
+                    <span className="bg-background text-foreground border-2 border-zinc-950 px-4 py-1 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg">
                       {language === "vi" ? "Khuyên Dùng" : "Recommended"}
                     </span>
                   </div>
@@ -221,7 +221,7 @@ export default function PricingPage() {
                 <CardContent className="p-8 flex flex-col h-full">
                   <div className="mb-8">
                     <h3 className="text-2xl font-extrabold tracking-tight">{plan.name}</h3>
-                    <p className={`text-sm mt-1.5 font-medium ${plan.isPopular ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                    <p className={`text-sm mt-1.5 font-medium ${plan.isPopular ? "text-white/80" : "text-muted-foreground"}`}>
                       {plan[language].target}
                     </p>
                   </div>
@@ -231,29 +231,29 @@ export default function PricingPage() {
                       {priceText}
                     </div>
                     {price > 0 && (
-                      <div className={`text-sm font-medium mt-2 ${plan.isPopular ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                      <div className={`text-sm font-medium mt-2 ${plan.isPopular ? "text-white/70" : "text-muted-foreground"}`}>
                         / {billingCycle === "monthly" ? (language === "vi" ? "tháng" : "month") : (language === "vi" ? "năm" : "year")}
                       </div>
                     )}
                   </div>
                   
-                  <hr className={`my-8 border-t ${plan.isPopular ? "border-primary-foreground/20" : "border-border"}`} />
+                  <hr className={`my-8 border-t ${plan.isPopular ? "border-white/10" : "border-border"}`} />
                   
                   <ul className="space-y-5 mb-10 flex-1">
                     <li className="flex items-start gap-4">
-                      <StorageIcon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.isPopular ? "text-primary-foreground/70" : "text-muted-foreground"}`} />
+                      <StorageIcon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.isPopular ? "text-white/70" : "text-muted-foreground"}`} />
                       <span className="font-medium text-sm leading-relaxed">{plan[language].storage}</span>
                     </li>
                     <li className="flex items-start gap-4">
-                      <VoiceIcon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.isPopular ? "text-primary-foreground/70" : "text-muted-foreground"}`} />
+                      <VoiceIcon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.isPopular ? "text-white/70" : "text-muted-foreground"}`} />
                       <span className="font-medium text-sm leading-relaxed">{plan[language].aiVoice}</span>
                     </li>
                     <li className="flex items-start gap-4">
-                      <GroupIcon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.isPopular ? "text-primary-foreground/70" : "text-muted-foreground"}`} />
+                      <GroupIcon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.isPopular ? "text-white/70" : "text-muted-foreground"}`} />
                       <span className="font-medium text-sm leading-relaxed">{plan[language].sharing}</span>
                     </li>
                     <li className="flex items-start gap-4">
-                      <TimeIcon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.isPopular ? "text-primary-foreground/70" : "text-muted-foreground"}`} />
+                      <TimeIcon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.isPopular ? "text-white/70" : "text-muted-foreground"}`} />
                       <span className="font-medium text-sm leading-relaxed">{plan[language].duration}</span>
                     </li>
                   </ul>
@@ -261,8 +261,8 @@ export default function PricingPage() {
                   <div className="mt-auto pt-2">
                     <div className={`w-full h-12 rounded-xl flex items-center justify-center font-bold text-sm tracking-wide transition-colors ${
                       isSelected 
-                        ? (plan.isPopular ? "bg-background text-foreground shadow-lg" : "bg-foreground text-background shadow-md") 
-                        : (plan.isPopular ? "bg-background text-foreground hover:bg-background/90 shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
+                        ? (plan.isPopular ? "bg-background text-zinc-950 shadow-lg" : "bg-foreground text-background shadow-md") 
+                        : (plan.isPopular ? "bg-background text-zinc-950 hover:bg-background/90 shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
                     }`}>
                       {isSelected ? (language === "vi" ? "Đã chọn" : "Selected") : (language === "vi" ? "Chọn gói" : "Select Plan")}
                     </div>
