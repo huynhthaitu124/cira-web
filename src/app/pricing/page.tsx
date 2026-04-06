@@ -113,8 +113,6 @@ export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("yearly");
   const [selectedPlan, setSelectedPlan] = useState<string>("family");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
   const router = useRouter();
 
   const toggleLanguage = () => {
@@ -127,48 +125,8 @@ export default function PricingPage() {
 
     const price = billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
     
-    if (price === 0) {
-      router.push('/register');
-      return;
-    }
-
-    if (!userEmail) {
-      setIsEmailDialogOpen(true);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const response = await fetch('/api/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email: userEmail,
-          planName: plan.name,
-          billingCycle,
-          price
-        })
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error);
-
-      router.push(`/pricing/checkout?plan=${encodeURIComponent(plan.name)}&price=${price}&cycle=${billingCycle}&orderCode=${data.orderCode}&lang=${language}`);
-    } catch (error) {
-      console.error(error);
-      alert(language === "vi" ? "Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại!" : "Error creating order. Please try again.");
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleEmailSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (userEmail.trim()) {
-      setIsEmailDialogOpen(false);
-      handleSubscribe();
-    }
+    // Always navigate to Auth (passing data in query string)
+    router.push(`/auth?plan=${encodeURIComponent(plan.name)}&price=${price}&cycle=${billingCycle}&lang=${language}`);
   };
 
   const formatPrice = (price: number) => {
@@ -322,48 +280,7 @@ export default function PricingPage() {
         </div>
       </main>
 
-      {/* Email Dialog */}
-      {isEmailDialogOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 relative animate-in fade-in zoom-in duration-200">
-            <button 
-              onClick={() => setIsEmailDialogOpen(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
-            >
-              ✕
-            </button>
-            <h3 className="text-2xl font-bold mb-2">
-              {language === "vi" ? "Nhập Email của bạn" : "Enter your Email"}
-            </h3>
-            <p className="text-gray-500 mb-6 text-sm">
-              {language === "vi" 
-                ? "Chúng tôi cần email của bạn để liên kết thanh toán với tài khoản Ứng dụng iOS." 
-                : "We need your email to link the payment with your iOS App account."}
-            </p>
 
-            <form onSubmit={handleEmailSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <input 
-                  type="email" 
-                  value={userEmail}
-                  onChange={(e) => setUserEmail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="name@email.com"
-                  required
-                />
-              </div>
-              <Button type="submit" disabled={isSubmitting} className="w-full h-12 text-lg">
-                {isSubmitting 
-                  ? (language === "vi" ? "Đang xử lý..." : "Processing...") 
-                  : (language === "vi" ? "Tiếp tục thanh toán" : "Continue to Payment")}
-              </Button>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
