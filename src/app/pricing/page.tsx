@@ -128,7 +128,7 @@ export default function PricingPage() {
     const price = billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
     
     if (price === 0) {
-      alert(language === "vi" ? "Bạn đã chọn gói Miễn phí!" : "You selected the Free plan!");
+      router.push('/register');
       return;
     }
 
