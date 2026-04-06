@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -111,33 +112,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation */}
-      <nav className="border-b bg-background/95 backdrop-blur sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-semibold tracking-tight">CIRA</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleLanguage}
-                className="gap-2"
-              >
-                {language === "vi" ? "🇻🇳" : "🇺🇸"} {language === "vi" ? "EN" : "VI"}
-              </Button>
-              <Button
-                size="sm"
-                className="rounded-full"
-                onClick={() => setShowDialog(true)}
-              >
-                {t.nav.cta}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar 
+        language={language}
+        toggleLanguage={toggleLanguage}
+        ctaText={t.nav.cta}
+        onCtaClick={() => setShowDialog(true)}
+      />
 
       {/* Hero Section */}
       <section className="py-16 lg:py-24">

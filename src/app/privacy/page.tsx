@@ -36,12 +36,24 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">5. Your Rights</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">5. AI Features & Data Processing</h2>
+            <p className="mb-3">Cira includes an AI Assistant feature that helps you search memories, create albums, and answer questions about your photos. When you use AI features:</p>
+            <ul className="list-disc pl-6 space-y-2">
+              <li><strong>Data Processed:</strong> Text messages and voice messages you send to the AI Assistant.</li>
+              <li><strong>Who Processes It:</strong> Currently, AI features are processed on-device and on Cira&apos;s own servers. If we integrate third-party AI services in the future, you will be notified and asked for consent again.</li>
+              <li><strong>Purpose:</strong> Solely to generate responses to your queries. AI data is NOT used for advertising purposes.</li>
+              <li><strong>Your Rights:</strong> You can decline or revoke consent for AI features at any time. You can also request deletion of all AI-related data.</li>
+            </ul>
+            <p className="mt-3">Any third-party AI service providers (if applicable) are required to provide equivalent or greater data protection as outlined in this policy.</p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">6. Your Rights</h2>
             <p>You have the right to access, edit, or delete your personal data at any time through the app settings or by contacting us.</p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">6. Contact Us</h2>
+            <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">7. Contact Us</h2>
             <p>If you have any questions or concerns about this privacy policy, please contact us at: <strong className="text-zinc-900 dark:text-zinc-100">cira.app.sp@gmail.com</strong></p>
           </section>
 
