@@ -201,8 +201,8 @@ export default function PricingPage() {
             const priceText = price === 0 ? (language === "vi" ? "Miễn phí" : "Free") : formatPrice(price);
             
             // Hero inversion for the popular plan
-            const bgClass = plan.isPopular ? "bg-zinc-950 text-white border-zinc-900" : "bg-card text-card-foreground border-border";
-            const focusClass = isSelected ? "ring-2 ring-zinc-950 ring-offset-4 ring-offset-background" : "hover:border-foreground/30";
+            const bgClass = plan.isPopular ? "bg-slate-900 text-white border-slate-800" : "bg-card text-card-foreground border-border";
+            const focusClass = isSelected ? "ring-2 ring-slate-900 ring-offset-4 ring-offset-background" : "hover:border-foreground/30";
             
             return (
               <Card 
@@ -212,7 +212,7 @@ export default function PricingPage() {
               >
                 {plan.isPopular && (
                   <div className="absolute -top-4 left-0 right-0 flex justify-center">
-                    <span className="bg-background text-foreground border-2 border-zinc-950 px-4 py-1 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg">
+                    <span className="bg-background text-foreground border-2 border-slate-900 px-4 py-1 text-xs font-bold uppercase tracking-widest rounded-full shadow-lg">
                       {language === "vi" ? "Khuyên Dùng" : "Recommended"}
                     </span>
                   </div>
@@ -261,8 +261,8 @@ export default function PricingPage() {
                   <div className="mt-auto pt-2">
                     <div className={`w-full h-12 rounded-xl flex items-center justify-center font-bold text-sm tracking-wide transition-colors ${
                       isSelected 
-                        ? (plan.isPopular ? "bg-background text-zinc-950 shadow-lg" : "bg-foreground text-background shadow-md") 
-                        : (plan.isPopular ? "bg-background text-zinc-950 hover:bg-background/90 shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
+                        ? (plan.isPopular ? "bg-background text-slate-900 shadow-lg" : "bg-foreground text-background shadow-md") 
+                        : (plan.isPopular ? "bg-background text-slate-900 hover:bg-background/90 shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
                     }`}>
                       {isSelected ? (language === "vi" ? "Đã chọn" : "Selected") : (language === "vi" ? "Chọn gói" : "Select Plan")}
                     </div>
