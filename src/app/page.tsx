@@ -2,107 +2,17 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog";
 import { translations } from "@/lib/translations";
 
 type Language = "vi" | "en";
 
-
 export default function Home() {
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [age, setAge] = useState("");
-  const [showDialog, setShowDialog] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [showError, setShowError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [language, setLanguage] = useState<Language>("vi");
-
-
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!email || isSubmitting) return;
-
-    // Show dialog to collect user details
-    setShowDialog(true);
-  };
-
-  const handleDialogSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!email || !firstName || !lastName || !age || isSubmitting) return;
-
-    setIsSubmitting(true);
-    setShowError(false);
-    setShowSuccess(false);
-
-    try {
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.trim(),
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          age: parseInt(age),
-          language,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (data.code === 'DUPLICATE_EMAIL') {
-          setErrorMessage(language === 'vi'
-            ? 'Email này đã đăng ký waitlist rồi!'
-            : 'This email is already on the waitlist!');
-        } else {
-          setErrorMessage(data.error || (language === 'vi'
-            ? 'Có lỗi xảy ra. Vui lòng thử lại!'
-            : 'An error occurred. Please try again!'));
-        }
-        setShowError(true);
-        setShowDialog(false);
-        return;
-      }
-
-      setShowSuccess(true);
-      setEmail("");
-      setFirstName("");
-      setLastName("");
-      setAge("");
-      setShowDialog(false);
-      setTimeout(() => setShowSuccess(false), 8000);
-
-    } catch (error) {
-      console.error('Submission error:', error);
-      setErrorMessage(language === 'vi'
-        ? 'Không thể kết nối. Vui lòng kiểm tra internet!'
-        : 'Connection failed. Please check your internet!');
-      setShowError(true);
-      setShowDialog(false);
-    } finally {
-      setIsSubmitting(false);
-      setTimeout(() => setShowError(false), 6000);
-    }
-  };
-
+  const router = useRouter();
 
   const toggleLanguage = () => {
     setLanguage(language === "vi" ? "en" : "vi");
@@ -110,13 +20,18 @@ export default function Home() {
 
   const t = translations[language];
 
+  // Placeholder action for opening the app store
+  const handleAppStoreClick = () => {
+    window.open("#", "_blank");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar 
         language={language}
         toggleLanguage={toggleLanguage}
         ctaText={t.nav.cta}
-        onCtaClick={() => setShowDialog(true)}
+        onCtaClick={handleAppStoreClick}
       />
 
       {/* Hero Section */}
@@ -125,176 +40,61 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="space-y-8">
               <div className="inline-block">
-                <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-secondary rounded-full text-sm font-medium">
+                <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-secondary text-secondary-foreground rounded-full text-sm font-medium">
                   ✨ {t.hero.badge}
                 </span>
               </div>
 
-              <h1 className="text-4xl lg:text-6xl font-bold tracking-tight">
+              <h1 className="text-4xl lg:text-6xl font-extrabold tracking-tight">
                 {t.hero.title.line1} <br />
                 <span className="text-muted-foreground">{t.hero.title.line2}</span>
               </h1>
 
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-lg">
+              <p className="text-xl text-muted-foreground leading-relaxed max-w-lg">
                 {t.hero.description}
               </p>
 
-              <Card className="border-2">
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div className="inline-block">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary text-primary-foreground rounded-full text-xs font-semibold">
-                        🎁 {t.hero.offerBadge}
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-semibold">
-                      {t.hero.offerTitle}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {t.hero.offerSubtitle}
-                    </p>
+              <div className="pt-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <Button 
+                  size="lg" 
+                  onClick={handleAppStoreClick}
+                  className="w-full sm:w-auto text-lg h-14 px-8 rounded-xl font-semibold shadow-md active:scale-95 transition-all"
+                >
+                  <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91 1.65.17 3.16.82 4.11 2.21-3.32 1.95-2.77 6.46.46 7.84-.71 1.05-1.53 2.1-2.43 2.85M15.42 4.61c.69-.87 1.15-2.07.98-3.29-1.03.05-2.32.74-3.05 1.61-.59.7-.1 1.94.13 3.1 1.13.08 2.37-.62 1.94-1.42"/>
+                  </svg>
+                  {t.hero.ctaButton}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  onClick={() => router.push('/pricing')}
+                  className="w-full sm:w-auto text-lg h-14 px-8 rounded-xl font-semibold border-2 active:scale-95 transition-all"
+                >
+                  {t.hero.secondaryCtaButton}
+                </Button>
+              </div>
 
-                    <form onSubmit={handleSubmit} className="space-y-3">
-                      <div className="flex gap-2">
-                        <Input
-                          type="email"
-                          placeholder={t.hero.emailPlaceholder}
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                          disabled={isSubmitting}
-                          className="flex-1"
-                        />
-                        <Button type="submit" className="whitespace-nowrap" disabled={isSubmitting}>
-                          {isSubmitting ? (language === 'vi' ? 'Đang gửi...' : 'Sending...') : t.hero.ctaButton}
-                        </Button>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {t.hero.formNote}
-                      </p>
-                    </form>
-
-                    {showSuccess && (
-                      <div className="p-3 bg-green-50 border border-green-200 rounded-lg animate-in fade-in slide-in-from-top-2">
-                        <p className="text-sm text-green-800 font-medium">
-                          {t.hero.successMessage}
-                        </p>
-                      </div>
-                    )}
-
-                    {showError && (
-                      <div className="p-3 bg-red-50 border border-red-200 rounded-lg animate-in fade-in slide-in-from-top-2">
-                        <p className="text-sm text-red-800 font-medium">
-                          ❌ {errorMessage}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* User Information Dialog */}
-              <Dialog open={showDialog} onOpenChange={setShowDialog}>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>{t.hero.dialog.title}</DialogTitle>
-                    <DialogDescription>
-                      {t.hero.dialog.description}
-                    </DialogDescription>
-                  </DialogHeader>
-                  <form onSubmit={handleDialogSubmit} className="space-y-4">
-                    {/* Email field */}
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">
-                        Email
-                      </label>
-                      <Input
-                        type="email"
-                        placeholder={t.hero.emailPlaceholder}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        disabled={isSubmitting}
-                      />
-                    </div>
-
-                    {/* First Name and Last Name in same row */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          {t.hero.dialog.firstNameLabel}
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder={t.hero.dialog.firstNamePlaceholder}
-                          value={firstName}
-                          onChange={(e) => setFirstName(e.target.value)}
-                          required
-                          disabled={isSubmitting}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                          {t.hero.dialog.lastNameLabel}
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder={t.hero.dialog.lastNamePlaceholder}
-                          value={lastName}
-                          onChange={(e) => setLastName(e.target.value)}
-                          required
-                          disabled={isSubmitting}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium">
-                        {t.hero.dialog.ageLabel}
-                      </label>
-                      <Input
-                        type="number"
-                        placeholder={t.hero.dialog.agePlaceholder}
-                        value={age}
-                        onChange={(e) => setAge(e.target.value)}
-                        required
-                        min="1"
-                        max="150"
-                        disabled={isSubmitting}
-                      />
-                    </div>
-                    <div className="flex gap-2 justify-end pt-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setShowDialog(false)}
-                        disabled={isSubmitting}
-                      >
-                        {t.hero.dialog.cancelButton}
-                      </Button>
-                      <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? (language === 'vi' ? 'Đang gửi...' : 'Sending...') : t.hero.dialog.submitButton}
-                      </Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
-
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mt-4">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
+                <span>{t.hero.formNote}</span>
+              </div>
+              
+              <div className="flex items-center gap-2 text-sm font-medium mt-2">
                 <span>{t.hero.trustBadge}</span>
               </div>
             </div>
 
             <div className="relative">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+              <div className="relative rounded-2xl overflow-hidden shadow-xl border bg-black/5">
                 <Image
                   src="/images/cira_hero_image.png"
                   alt={t.hero.imageAlt}
                   width={800}
                   height={600}
-                  className="w-full h-auto"
+                  className="w-full h-auto object-cover"
                   priority
                 />
               </div>
@@ -304,20 +104,20 @@ export default function Home() {
       </section>
 
       {/* Trust Badges */}
-      <section className="py-12 border-y bg-secondary/30">
+      <section className="py-12 border-y bg-secondary/20">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold">10,000+</div>
-              <div className="text-sm text-muted-foreground mt-1">{t.trust.stat1}</div>
+              <div className="text-3xl font-extrabold">10,000+</div>
+              <div className="text-sm text-muted-foreground mt-1 font-medium">{t.trust.stat1}</div>
             </div>
             <div>
-              <div className="text-3xl font-bold">5★</div>
-              <div className="text-sm text-muted-foreground mt-1">{t.trust.stat2}</div>
+              <div className="text-3xl font-extrabold">4.9★</div>
+              <div className="text-sm text-muted-foreground mt-1 font-medium">{t.trust.stat2}</div>
             </div>
             <div>
-              <div className="text-3xl font-bold">100%</div>
-              <div className="text-sm text-muted-foreground mt-1">{t.trust.stat3}</div>
+              <div className="text-3xl font-extrabold">100%</div>
+              <div className="text-sm text-muted-foreground mt-1 font-medium">{t.trust.stat3}</div>
             </div>
           </div>
         </div>
@@ -327,7 +127,7 @@ export default function Home() {
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4 tracking-tight">
               {t.video.title}
             </h2>
             <p className="text-lg text-muted-foreground">
@@ -335,7 +135,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="relative rounded-2xl overflow-hidden shadow-xl aspect-video bg-muted">
+          <div className="relative rounded-2xl overflow-hidden shadow-lg aspect-video bg-muted border">
             <video
               className="w-full h-full object-cover"
               controls
@@ -349,10 +149,10 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section className="py-20 bg-secondary/30">
+      <section className="py-20 bg-secondary/20">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4 tracking-tight">
               {t.features.title}
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -362,10 +162,10 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {t.features.items.map((feature, index) => (
-              <Card key={index} className="border-2 hover:shadow-lg transition-shadow">
-                <CardContent className="p-6">
-                  <div className="text-4xl mb-4">{feature.icon}</div>
-                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <Card key={index} className="border-none shadow-sm bg-card hover:shadow-md transition-shadow">
+                <CardContent className="p-8">
+                  <div className="text-4xl mb-6">{feature.icon}</div>
+                  <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
                   <p className="text-muted-foreground leading-relaxed">
                     {feature.description}
                   </p>
@@ -376,11 +176,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* Pricing Teaser */}
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4 tracking-tight">
               {t.pricing.title}
             </h2>
             <p className="text-lg text-muted-foreground">
@@ -392,32 +192,39 @@ export default function Home() {
             {t.pricing.plans.map((plan, index) => (
               <Card
                 key={index}
-                className={`border-2 ${plan.featured ? 'border-primary shadow-lg scale-105' : ''}`}
+                className={`border bg-card shadow-sm ${plan.featured ? 'border-primary shadow-lg ring-2 ring-primary ring-offset-2' : ''}`}
               >
                 <CardContent className="p-8">
                   {plan.featured && (
-                    <span className="inline-block px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full mb-4">
+                    <span className="inline-block px-3 py-1 bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider rounded-full mb-6">
                       {t.pricing.popularBadge}
                     </span>
                   )}
                   <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <div className="mb-4">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">{t.pricing.perMonth}</span>
+                  <div className="mb-4 flex items-end gap-1">
+                    <span className="text-4xl font-extrabold tracking-tight">{plan.price}</span>
+                    <span className="text-muted-foreground mb-1">{t.pricing.perMonth}</span>
                   </div>
-                  <p className="text-sm text-green-600 font-medium mb-6">
-                    {t.pricing.discountText} {plan.discountPrice}!
+                  <p className="text-sm font-semibold mb-6">
+                    {t.pricing.discountText} <span className="text-primary">{plan.discountPrice}</span>
                   </p>
-                  <ul className="space-y-3 mb-6">
+                  <ul className="space-y-4 mb-8">
                     {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm">
-                        <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <li key={i} className="flex items-start gap-3 text-sm font-medium">
+                        <svg className="w-5 h-5 text-primary flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
                         <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
+                  <Button 
+                    variant={plan.featured ? "default" : "outline"} 
+                    className="w-full font-bold"
+                    onClick={() => router.push('/pricing')}
+                  >
+                    {t.cta.pricingButton}
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -426,58 +233,42 @@ export default function Home() {
       </section>
 
       {/* Social Proof */}
-      <section className="py-20 bg-secondary/30">
+      <section className="py-24 bg-card border-t border-b">
         <div className="max-w-6xl mx-auto px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="relative rounded-2xl overflow-hidden shadow-xl">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="relative rounded-2xl overflow-hidden shadow-lg border">
               <Image
                 src="/images/family_connection_moment.png"
                 alt={t.social.imageAlt}
                 width={600}
                 height={400}
-                className="w-full h-auto"
+                className="w-full h-auto object-cover"
               />
             </div>
 
-            <div className="space-y-6">
-              <Card className="border-2">
-                <CardContent className="p-8">
-                  <div className="text-6xl text-muted-foreground/20 font-serif mb-4">&quot;</div>
-                  <p className="text-lg leading-relaxed mb-6">
-                    {t.social.testimonial.quote}
-                  </p>
-                  <div>
-                    <div className="font-semibold">{t.social.testimonial.author}</div>
-                    <div className="text-sm text-muted-foreground">{t.social.testimonial.role}</div>
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="space-y-8">
+              <div className="bg-secondary/30 p-8 rounded-2xl border">
+                <div className="text-6xl text-primary/40 font-serif mb-2 leading-none">&quot;</div>
+                <p className="text-xl font-medium leading-relaxed mb-6">
+                  {t.social.testimonial.quote}
+                </p>
+                <div>
+                  <div className="font-bold text-lg">{t.social.testimonial.author}</div>
+                  <div className="text-sm text-muted-foreground">{t.social.testimonial.role}</div>
+                </div>
+              </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
+              <div className="space-y-4 pt-4">
+                {t.social.badges.map((badge, idx) => (
+                  <div key={idx} className="flex items-center gap-3">
+                    <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span className="font-medium text-muted-foreground">{badge}</span>
                   </div>
-                  <span>{t.social.badges[0]}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span>{t.social.badges[1]}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <span>{t.social.badges[2]}</span>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -485,101 +276,78 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-primary text-primary-foreground">
+      <section className="py-24 bg-primary text-primary-foreground">
         <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
-          <h2 className="text-3xl lg:text-5xl font-bold mb-6">
+          <h2 className="text-4xl lg:text-6xl font-extrabold mb-6 tracking-tight leading-tight">
             {t.cta.title.line1} <br />
             {t.cta.title.line2}
           </h2>
-          <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto" dangerouslySetInnerHTML={{ __html: t.cta.description }} />
+          <p className="text-xl mb-12 max-w-2xl mx-auto text-primary-foreground/90 leading-relaxed" dangerouslySetInnerHTML={{ __html: t.cta.description }} />
 
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
+            <Button 
+               size="lg" 
+               onClick={handleAppStoreClick}
+               className="bg-background text-foreground hover:bg-background/90 text-lg h-14 px-10 rounded-xl font-bold shadow-lg active:scale-95 transition-transform"
+            >
+              <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                 <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91 1.65.17 3.16.82 4.11 2.21-3.32 1.95-2.77 6.46.46 7.84-.71 1.05-1.53 2.1-2.43 2.85M15.42 4.61c.69-.87 1.15-2.07.98-3.29-1.03.05-2.32.74-3.05 1.61-.59.7-.1 1.94.13 3.1 1.13.08 2.37-.62 1.94-1.42"/>
+              </svg>
+              {t.cta.button}
+            </Button>
+          </div>
 
-          <Card className="max-w-xl mx-auto">
-            <CardContent className="p-8">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="flex gap-3">
-                  <Input
-                    type="email"
-                    placeholder={t.cta.emailPlaceholder}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    disabled={isSubmitting}
-                    className="flex-1"
-                  />
-                  <Button type="submit" size="lg" className="whitespace-nowrap bg-foreground text-background hover:bg-foreground/90" disabled={isSubmitting}>
-                    {isSubmitting ? (language === 'vi' ? 'Đang gửi...' : 'Sending...') : t.cta.button}
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {t.cta.privacyNote}
-                </p>
-              </form>
-
-              {showSuccess && (
-                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg animate-in fade-in">
-                  <p className="text-sm text-green-800 font-medium">
-                    {t.cta.successMessage}
-                  </p>
-                </div>
-              )}
-
-              {showError && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg animate-in fade-in">
-                  <p className="text-sm text-red-800 font-medium">
-                    ❌ {errorMessage}
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <p className="mt-6 text-sm opacity-75" dangerouslySetInnerHTML={{ __html: t.cta.urgency }} />
+          <div className="mt-8 flex flex-col items-center gap-2">
+            <p className="text-sm font-medium text-primary-foreground/80">
+              {t.cta.privacyNote}
+            </p>
+            <p className="text-sm font-medium bg-primary-foreground/10 px-4 py-1.5 rounded-full" dangerouslySetInnerHTML={{ __html: t.cta.urgency }} />
+          </div>
         </div>
       </section >
 
       {/* Footer */}
-      <footer className="py-12 border-t">
+      <footer className="py-16 bg-background border-t">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
+          <div className="grid md:grid-cols-4 gap-12 md:gap-8 mb-12">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-xl font-semibold">CIRA</span>
+              <div className="flex items-center gap-2 mb-6">
+                <span className="text-2xl font-extrabold tracking-tight">CIRA</span>
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground font-medium">
                 {t.footer.tagline}
               </p>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">{t.footer.product.title}</h4>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div>{t.footer.product.features}</div>
-                <div>{t.footer.product.pricing}</div>
-                <div>{t.footer.product.faq}</div>
+              <h4 className="font-bold text-lg mb-6">{t.footer.product.title}</h4>
+              <div className="space-y-4 font-medium text-muted-foreground">
+                <div className="hover:text-foreground cursor-pointer transition-colors">{t.footer.product.features}</div>
+                <div className="hover:text-foreground cursor-pointer transition-colors">{t.footer.product.pricing}</div>
+                <div className="hover:text-foreground cursor-pointer transition-colors">{t.footer.product.faq}</div>
               </div>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">{t.footer.company.title}</h4>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div>{t.footer.company.about}</div>
-                <div>{t.footer.company.contact}</div>
-                <div>{t.footer.company.privacy}</div>
+              <h4 className="font-bold text-lg mb-6">{t.footer.company.title}</h4>
+              <div className="space-y-4 font-medium text-muted-foreground">
+                <div className="hover:text-foreground cursor-pointer transition-colors">{t.footer.company.about}</div>
+                <div className="hover:text-foreground cursor-pointer transition-colors">{t.footer.company.contact}</div>
+                <div className="hover:text-foreground cursor-pointer transition-colors">{t.footer.company.privacy}</div>
               </div>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4">{t.footer.support.title}</h4>
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div>{t.footer.support.help}</div>
-                <div>{t.footer.support.community}</div>
-                <div>{t.footer.support.email}</div>
+              <h4 className="font-bold text-lg mb-6">{t.footer.support.title}</h4>
+              <div className="space-y-4 font-medium text-muted-foreground">
+                <div className="hover:text-foreground cursor-pointer transition-colors">{t.footer.support.help}</div>
+                <div className="hover:text-foreground cursor-pointer transition-colors">{t.footer.support.community}</div>
+                <div className="hover:text-foreground cursor-pointer transition-colors">{t.footer.support.email}</div>
               </div>
             </div>
           </div>
 
-          <div className="pt-8 border-t text-center text-sm text-muted-foreground">
+          <div className="pt-8 border-t text-center font-medium text-muted-foreground">
             {t.footer.copyright}
           </div>
         </div>
