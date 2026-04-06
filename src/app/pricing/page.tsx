@@ -261,8 +261,8 @@ export default function PricingPage() {
                   <div className="mt-auto pt-2">
                     <div className={`w-full h-12 rounded-xl flex items-center justify-center font-bold text-sm tracking-wide transition-colors ${
                       isSelected 
-                        ? (plan.isPopular ? "bg-background text-foreground shadow-md" : "bg-foreground text-background shadow-md") 
-                        : (plan.isPopular ? "bg-primary-foreground/10 text-primary-foreground" : "bg-secondary text-secondary-foreground")
+                        ? (plan.isPopular ? "bg-background text-foreground shadow-lg" : "bg-foreground text-background shadow-md") 
+                        : (plan.isPopular ? "bg-background text-foreground hover:bg-background/90 shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
                     }`}>
                       {isSelected ? (language === "vi" ? "Đã chọn" : "Selected") : (language === "vi" ? "Chọn gói" : "Select Plan")}
                     </div>
