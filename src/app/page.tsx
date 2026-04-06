@@ -20,9 +20,9 @@ export default function Home() {
 
   const t = translations[language];
 
-  // Placeholder action for opening the app store
+  // Open the CIRA app store link
   const handleAppStoreClick = () => {
-    window.open("#", "_blank");
+    window.open("https://apps.apple.com/vn/app/cira/id6760659914?l=vi", "_blank");
   };
 
   return (
