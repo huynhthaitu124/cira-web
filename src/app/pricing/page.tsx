@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
 
 type Language = "vi" | "en";
 type BillingCycle = "monthly" | "yearly";
@@ -126,7 +127,21 @@ export default function PricingPage() {
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("yearly");
   const [selectedPlan, setSelectedPlan] = useState<string>("family");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
   const router = useRouter();
+
+  // Load session from Supabase
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session?.user?.email) setCurrentUser(data.session.user.email);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUser(session?.user?.email || null);
+    });
+    return () => {
+      if (listener?.subscription) listener.subscription.unsubscribe();
+    };
+  }, []);
 
   const toggleLanguage = () => {
     setLanguage(language === "vi" ? "en" : "vi");
@@ -139,8 +154,39 @@ export default function PricingPage() {
     setIsSubmitting(true);
     const price = billingCycle === "yearly" ? plan.yearlyPrice : plan.monthlyPrice;
     
-    // Always navigate to Auth (passing data in query string)
-    router.push(`/auth?plan=${encodeURIComponent(plan.name)}&price=${price}&cycle=${billingCycle}&lang=${language}`);
+    // If the user hasn't logged in, send them to /auth
+    if (!currentUser) {
+       router.push(`/auth?plan=${encodeURIComponent(plan.name)}&price=${price}&cycle=${billingCycle}&lang=${language}`);
+       return;
+    }
+
+    if (price === 0) {
+       router.push('/download');
+       return;
+    }
+
+    // Bypass Auth completely if session exists
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: currentUser,
+          planName: plan.name,
+          billingCycle,
+          price
+        })
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+
+      router.push(`/pricing/checkout?plan=${encodeURIComponent(plan.name)}&price=${price}&cycle=${billingCycle}&orderCode=${data.orderCode}&lang=${language}`);
+    } catch (err) {
+      console.error(err);
+      alert(language === "vi" ? "Lỗi thanh toán. Vui lòng thử lại!" : "Checkout error!");
+      setIsSubmitting(false);
+    }
   };
 
   const formatPrice = (price: number) => {
