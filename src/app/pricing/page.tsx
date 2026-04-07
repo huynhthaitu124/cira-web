@@ -128,20 +128,48 @@ export default function PricingPage() {
   const [selectedPlan, setSelectedPlan] = useState<string>("family");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
+  const [currentSubscription, setCurrentSubscription] = useState<string | null>(null);
   const router = useRouter();
 
   // Load session from Supabase
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session?.user?.email) setCurrentUser(data.session.user.email);
+      const email = data.session?.user?.email;
+      if (email) {
+        setCurrentUser(email);
+        fetchSubscription(email);
+      }
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setCurrentUser(session?.user?.email || null);
+      const email = session?.user?.email;
+      setCurrentUser(email || null);
+      if (email) {
+        fetchSubscription(email);
+      } else {
+        setCurrentSubscription(null);
+      }
     });
     return () => {
       if (listener?.subscription) listener.subscription.unsubscribe();
     };
   }, []);
+
+  const fetchSubscription = async (email: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('plan_name')
+        .eq('email', email)
+        .eq('status', 'ACTIVE')
+        .single();
+        
+      if (data && !error) {
+        setCurrentSubscription(data.plan_name);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const toggleLanguage = () => {
     setLanguage(language === "vi" ? "en" : "vi");
@@ -306,11 +334,18 @@ export default function PricingPage() {
                   
                   <div className="mt-auto pt-2">
                     <div className={`w-full h-12 rounded-xl flex items-center justify-center font-bold text-sm tracking-wide transition-colors ${
-                      isSelected 
-                        ? (plan.isPopular ? "bg-background text-slate-900 shadow-lg" : "bg-foreground text-background shadow-md") 
-                        : (plan.isPopular ? "bg-background text-slate-900 hover:bg-background/90 shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
+                      currentSubscription === plan.name 
+                        ? "bg-emerald-500 text-white shadow-lg ring-2 ring-emerald-500/20"
+                        : isSelected 
+                          ? (plan.isPopular ? "bg-background text-slate-900 shadow-lg" : "bg-foreground text-background shadow-md") 
+                          : (plan.isPopular ? "bg-background text-slate-900 hover:bg-background/90 shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
                     }`}>
-                      {isSelected ? (language === "vi" ? "Đã chọn" : "Selected") : (language === "vi" ? "Chọn gói" : "Select Plan")}
+                      {currentSubscription === plan.name 
+                        ? (language === "vi" ? "Gói hiện tại" : "Current Plan")
+                        : isSelected 
+                           ? (language === "vi" ? "Đã chọn" : "Selected") 
+                           : (language === "vi" ? "Chọn gói" : "Select Plan")
+                      }
                     </div>
                   </div>
                 </CardContent>
@@ -322,16 +357,18 @@ export default function PricingPage() {
         <div className="mt-20 text-center max-w-xl mx-auto">
           <Button 
             onClick={handleSubscribe} 
-            disabled={isSubmitting || !selectedPlan}
+            disabled={isSubmitting || !selectedPlan || (currentSubscription === iOSPlans.find(p => p.key === selectedPlan)?.name)}
             size="lg"
             className="w-full text-lg h-16 font-extrabold rounded-2xl shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 disabled:hover:scale-100"
           >
             {isSubmitting 
               ? (language === "vi" ? "Đang xử lý..." : "Processing...") 
-              : (selectedPlan 
-                  ? `${language === "vi" ? "Tiếp tục đăng ký" : "Continue with"} ${iOSPlans.find(p => p.key === selectedPlan)?.name}` 
-                  : (language === "vi" ? "Chọn một gói" : "Choose a plan")
-                )
+              : (currentSubscription === iOSPlans.find(p => p.key === selectedPlan)?.name)
+                ? (language === "vi" ? "Bạn đang dùng gói này" : "Current Active Plan")
+                : (selectedPlan 
+                    ? `${language === "vi" ? "Tiếp tục đăng ký" : "Continue with"} ${iOSPlans.find(p => p.key === selectedPlan)?.name}` 
+                    : (language === "vi" ? "Chọn một gói" : "Choose a plan")
+                  )
             }
           </Button>
           <div className="text-sm font-medium text-muted-foreground mt-6 flex items-center justify-center gap-1.5 flex-wrap">
