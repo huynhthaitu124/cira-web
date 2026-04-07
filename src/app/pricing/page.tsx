@@ -128,7 +128,7 @@ export default function PricingPage() {
   const [selectedPlan, setSelectedPlan] = useState<string>("family");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState<string | null>(null);
-  const [currentSubscription, setCurrentSubscription] = useState<string | null>(null);
+  const [currentSubscription, setCurrentSubscription] = useState<{plan_name: string, billing_cycle: string} | null>(null);
   const router = useRouter();
 
   // Load session from Supabase
@@ -158,13 +158,16 @@ export default function PricingPage() {
     try {
       const { data, error } = await supabase
         .from('subscriptions')
-        .select('plan_name')
+        .select('plan_name, billing_cycle')
         .eq('email', email)
         .eq('status', 'ACTIVE')
         .single();
         
       if (data && !error) {
-        setCurrentSubscription(data.plan_name);
+        setCurrentSubscription({
+          plan_name: data.plan_name,
+          billing_cycle: data.billing_cycle
+        });
       }
     } catch (e) {
       console.error(e);
@@ -273,6 +276,7 @@ export default function PricingPage() {
             const isSelected = selectedPlan === plan.key;
             const price = billingCycle === "monthly" ? plan.monthlyPrice : plan.yearlyPrice;
             const priceText = price === 0 ? (language === "vi" ? "Miễn phí" : "Free") : formatPrice(price);
+            const isCurrentPlan = currentSubscription?.plan_name === plan.name && currentSubscription?.billing_cycle === billingCycle;
             
             // Hero inversion for the popular plan
             const bgClass = plan.isPopular ? "bg-slate-900 text-white border-slate-800" : "bg-card text-card-foreground border-border";
@@ -334,13 +338,13 @@ export default function PricingPage() {
                   
                   <div className="mt-auto pt-2">
                     <div className={`w-full h-12 rounded-xl flex items-center justify-center font-bold text-sm tracking-wide transition-colors ${
-                      currentSubscription === plan.name 
+                      isCurrentPlan 
                         ? "bg-emerald-500 text-white shadow-lg ring-2 ring-emerald-500/20"
                         : isSelected 
                           ? (plan.isPopular ? "bg-background text-slate-900 shadow-lg" : "bg-foreground text-background shadow-md") 
                           : (plan.isPopular ? "bg-background text-slate-900 hover:bg-background/90 shadow-md" : "bg-secondary text-secondary-foreground hover:bg-secondary/80")
                     }`}>
-                      {currentSubscription === plan.name 
+                      {isCurrentPlan 
                         ? (language === "vi" ? "Gói hiện tại" : "Current Plan")
                         : isSelected 
                            ? (language === "vi" ? "Đã chọn" : "Selected") 
@@ -357,13 +361,13 @@ export default function PricingPage() {
         <div className="mt-20 text-center max-w-xl mx-auto">
           <Button 
             onClick={handleSubscribe} 
-            disabled={isSubmitting || !selectedPlan || (currentSubscription === iOSPlans.find(p => p.key === selectedPlan)?.name)}
+            disabled={isSubmitting || !selectedPlan || (currentSubscription?.plan_name === iOSPlans.find(p => p.key === selectedPlan)?.name && currentSubscription?.billing_cycle === billingCycle)}
             size="lg"
             className="w-full text-lg h-16 font-extrabold rounded-2xl shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 disabled:hover:scale-100"
           >
             {isSubmitting 
               ? (language === "vi" ? "Đang xử lý..." : "Processing...") 
-              : (currentSubscription === iOSPlans.find(p => p.key === selectedPlan)?.name)
+              : (currentSubscription?.plan_name === iOSPlans.find(p => p.key === selectedPlan)?.name && currentSubscription?.billing_cycle === billingCycle)
                 ? (language === "vi" ? "Bạn đang dùng gói này" : "Current Active Plan")
                 : (selectedPlan 
                     ? `${language === "vi" ? "Tiếp tục đăng ký" : "Continue with"} ${iOSPlans.find(p => p.key === selectedPlan)?.name}` 
